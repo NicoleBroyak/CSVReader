@@ -44,7 +44,7 @@ class Base:
         elif file_type == 'pickle':
             self.dst_file = Pickle()
             self.dst_file.file_name = sys.argv[2]
-            self.dst_file.pickle_write()
+            self.src_file.pickle_read()
         else:
             self.dst_file = None
             self.error = 1        
@@ -88,9 +88,17 @@ class Pickle(Base):
             self.mode = 'wb'
 
     def pickle_read(self):
+        self.pickle_mode()
         with open(self.file_name, self.mode) as file:
             self.unpickled = pickle.loads(file.read())
             print(self.unpickled)
+
+    def changes(self, num_changes):
+        for index in range(0,num_changes):
+            change = sys.argv[index + 3].split(sep=",")
+            self.unpickled[int(change[0])][int(change[1])] = change[2]
+        print(self.unpickled)
+
 
     def write_as_json(self):
         self.unpickled_json = json.dumps(self.unpickled)
@@ -101,9 +109,10 @@ class Pickle(Base):
     def write_as_csv(self):
         pass
 
-    def write_as_pickle(self):
+    def write_as_pickle(self, src):
+        self.pickle_mode()
         with open(self.file_name, self.mode) as file:
-            self.pickled = pickle.dumps(file.read())
+            src = pickle.dumps(self.unpickled)
 """
 listsss = [['a', 'b', 'c'],['z', 'y', 'x']]
 with open('pickle.pickle', 'wb') as file:
